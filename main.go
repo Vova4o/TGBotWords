@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"github.com/joho/godotenv"
 	"log"
 	"os"
+
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/joho/godotenv"
 )
 
 func init() {
@@ -16,8 +17,16 @@ func init() {
 	}
 }
 
-//var TgBotToken = os.Getenv("TG_BOT_TOKEN")
-//var BotApi = os.Getenv("BOT_API")
+var numericKeyboard = tgbotapi.NewInlineKeyboardMarkup(
+	tgbotapi.NewInlineKeyboardRow(
+		tgbotapi.NewInlineKeyboardButtonData("С начала", "start"),
+		tgbotapi.NewInlineKeyboardButtonData("Буква", "letter"),
+	),
+	tgbotapi.NewInlineKeyboardRow(
+		tgbotapi.NewInlineKeyboardButtonData("Цифра", "number"),
+		tgbotapi.NewInlineKeyboardButtonData("Ввести букву", "enterLetter"),
+	),
+)
 
 func main() {
 
@@ -37,22 +46,38 @@ func main() {
 	// Получаем обновления из канала updates
 	// и обрабатываем каждое по очереди
 	for update := range updates {
+
+		if update.CallbackQuery != nil {
+			callback := update.CallbackQuery
+			callbackData := callback.Data
+
+			if callbackData != "" {
+				msg := tgbotapi.NewMessage(callback.Message.Chat.ID, callback.Data)
+				msg.Text = "Вы выбрали " + callback.Data
+				bot.Send(msg)
+			}
+		}
+
 		// Проверяем, что сообщение не пустое
 		if update.Message == nil { // ignore non-Message updates
 			continue
 		}
-		//// Создаем текст сообщения для отправки пользователю
-		//text := "Hello Welcome to our bot!"
-		//// Создаем сообщение для отправки пользователю
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
-		// Используем switch для выбора действия по тексту сообщения
+
+		// конструируем ответное сообщение
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Пожалуйста напишите /start для начала работы с ботом")
+
 		switch update.Message.Text {
 		case "/start":
-			msg.Text = "Hello Welcome to our bot! Swithc!"
+			msg.Text = "Привет, добро пожаловать в наш бот!\n Ниже представлены кнопки для навигации по боту."
+			msg.ReplyMarkup = numericKeyboard
+		case "start":
+			msg.Text = "Привет, добро пожаловать в наш бот!\n Ниже представлены кнопки для навигации по боту."
+			msg.ReplyMarkup = numericKeyboard
 		}
-		// Отправляем сообщение пользователю
+
+		// и отправляем его обратно
 		if _, err := bot.Send(msg); err != nil {
-			log.Panic(err)
+			log.Print(err)
 		}
 	}
 
