@@ -90,14 +90,15 @@ func main() {
 			// bot.Send(msg)
 		}
 
+
+		// путем сложных манипуляций с текстом рунами и еще чем попало
+		// мы получаем первую букву введенного слова
 		str := strings.ToLower(update.Message.Text)
 		firstChar := str[0]
 		a := "а"
 		z := "я"
 		aByte := a[0]
 		zByte := z[0]
-		fmt.Println("\n\n", firstChar, str)
-		fmt.Println('а', "\n\n")
 		if firstChar >= aByte && firstChar <= zByte {
 			fmt.Println(str)
 			Arr = findMatch(Arr, str)
