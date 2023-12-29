@@ -45,11 +45,13 @@ func main() {
 	// и обрабатываем каждое по очереди
 	for update := range updates {
 
-		fmt.Println(len(Arr))
+		// fmt.Println(len(Arr))
+		// получает callback от кнопок
 		if update.CallbackQuery != nil {
 			callback := update.CallbackQuery
 			callbackData := callback.Data
 
+			// работаем с callbackData, отвечаем на запросы кнопок
 			switch callbackData {
 			case "fpage":
 				msg := tgbotapi.NewMessage(callback.Message.Chat.ID, callback.Data)
