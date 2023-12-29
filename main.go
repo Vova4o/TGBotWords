@@ -28,6 +28,12 @@ var numericKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 	),
 )
 
+var mainKeyboard = tgbotapi.NewReplyKeyboard(
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton("/start"),
+	),
+)
+
 func main() {
 
 	bot, err := tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_APITOKEN"))
@@ -51,11 +57,24 @@ func main() {
 			callback := update.CallbackQuery
 			callbackData := callback.Data
 
-			if callbackData != "" {
+			switch callbackData {
+			case "start":
+				// if callbackData != "" {
 				msg := tgbotapi.NewMessage(callback.Message.Chat.ID, callback.Data)
-				msg.Text = "Вы выбрали " + callback.Data
+				msg.Text = "Вы выбрали " + fmt.Sprintf("*%v*", callback.Data)
+				// делаем шрифт жирным
+				msg.ParseMode = "markdown"
+				bot.Send(msg)
+			case "letter":
+				msg := tgbotapi.NewMessage(callback.Message.Chat.ID, callback.Data)
+				msg.Text = "Привет! вот вы добрались до букв"
+				bot.Send(msg)
+			case "number":
+				msg := tgbotapi.NewMessage(callback.Message.Chat.ID, callback.Data)
+				msg.Text = "Привет! вот вы добрались до цифр"
 				bot.Send(msg)
 			}
+			// }
 		}
 
 		// Проверяем, что сообщение не пустое
@@ -64,15 +83,17 @@ func main() {
 		}
 
 		// конструируем ответное сообщение
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Пожалуйста напишите /start для начала работы с ботом")
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Пожалуйста, нажмите *start* для начала работы с ботом")
+		// делаем шрифт жирным
+		msg.ParseMode = "markdown"
+		msg.ReplyMarkup = mainKeyboard
 
 		switch update.Message.Text {
 		case "/start":
 			msg.Text = "Привет, добро пожаловать в наш бот!\n Ниже представлены кнопки для навигации по боту."
 			msg.ReplyMarkup = numericKeyboard
-		case "start":
-			msg.Text = "Привет, добро пожаловать в наш бот!\n Ниже представлены кнопки для навигации по боту."
-			msg.ReplyMarkup = numericKeyboard
+			// msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
+
 		}
 
 		// и отправляем его обратно
