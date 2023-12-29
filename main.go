@@ -86,10 +86,12 @@ func main() {
 		} else {
 			Arr = shrinkByLen(Arr, numOfLetters)
 			stringNewArr := strings.Join(Arr, ", ")
+			if len(stringNewArr) > 3000 {
+				stringNewArr = stringNewArr[:3000]
+			}
 			msg.Text = stringNewArr + "\n\nЕсли вы хотите ограничить колличество букв в слове, то введите цифру."
 			// bot.Send(msg)
 		}
-
 
 		// путем сложных манипуляций с текстом рунами и еще чем попало
 		// мы получаем первую букву введенного слова
@@ -103,7 +105,7 @@ func main() {
 			fmt.Println(str)
 			Arr = findMatch(Arr, str)
 			stringNewArr := strings.Join(Arr, ", ")
-			if len(stringNewArr) > 3500 {
+			if len(stringNewArr) > 3000 {
 				stringNewArr = stringNewArr[:3000]
 			}
 			msg.Text = stringNewArr + "\n\nТелеграм позволят показывать 4096 символов в сообщении, продолжайте выборку\nЕсли вы хотите ограничить колличество букв в слове, то введите цифру."
