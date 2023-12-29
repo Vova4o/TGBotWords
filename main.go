@@ -87,22 +87,29 @@ func main() {
 			Arr = shrinkByLen(Arr, numOfLetters)
 			stringNewArr := strings.Join(Arr, ", ")
 			msg.Text = stringNewArr + "\n\nЕсли вы хотите ограничить колличество букв в слове, то введите цифру."
-			bot.Send(msg)
+			// bot.Send(msg)
 		}
 
 		str := strings.ToLower(update.Message.Text)
-		firstChar := rune(str[0])
-		fmt.Println(firstChar)
-		if update.Message.Text >= "а" && update.Message.Text <= "я" {
+		firstChar := str[0]
+		a := "а"
+		z := "я"
+		aByte := a[0]
+		zByte := z[0]
+		fmt.Println("\n\n", firstChar, str)
+		fmt.Println('а', "\n\n")
+		if firstChar >= aByte && firstChar <= zByte {
 			fmt.Println(str)
 			Arr = findMatch(Arr, str)
 			stringNewArr := strings.Join(Arr, ", ")
-			stringNewArr = stringNewArr[:3500]
+			if len(stringNewArr) > 3500 {
+				stringNewArr = stringNewArr[:3000]
+			}
 			msg.Text = stringNewArr + "\n\nТелеграм позволят показывать 4096 символов в сообщении, продолжайте выборку\nЕсли вы хотите ограничить колличество букв в слове, то введите цифру."
-			bot.Send(msg)
+			// bot.Send(msg)
 		}
 
-		if firstChar >= 'a' && firstChar <= 'z' {
+		if firstChar >= byte('a') && firstChar <= byte('z') {
 			msg.Text = "Вы ввели букву " + update.Message.Text + ", я пока маленький и не понимаю Ангийский язык, но я учусь, попробуйте ввести русскую букву"
 		}
 
