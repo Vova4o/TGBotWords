@@ -11,12 +11,18 @@ import (
 	"github.com/joho/godotenv"
 )
 
+var Arr []string
+
 func init() {
 	envErr := godotenv.Load(".env")
 	if envErr != nil {
 		fmt.Printf("Error loading .env file")
 		os.Exit(1)
 	}
+}
+
+func init() {
+	Arr, _ = readTextFile()
 }
 
 func main() {
@@ -38,6 +44,7 @@ func main() {
 	// и обрабатываем каждое по очереди
 	for update := range updates {
 
+		fmt.Println(len(Arr))
 		// if update.CallbackQuery != nil {
 		// 	callback := update.CallbackQuery
 		// 	callbackData := callback.Data
@@ -77,11 +84,28 @@ func main() {
 		if err != nil {
 			log.Print(err)
 		} else {
-			msg.Text = "Вы ввели число " + update.Message.Text + " и я его преобразовал в число " + strconv.Itoa(numOfLetters)
+			Arr = shrinkByLen(Arr, numOfLetters)
+			stringNewArr := strings.Join(Arr, ", ")
+			msg.Text = stringNewArr + "\n\nЕсли вы хотите ограничить колличество букв в слове, то введите цифру."
+			bot.Send(msg)
 		}
 
 		str := strings.ToLower(update.Message.Text)
 		firstChar := rune(str[0])
+		fmt.Println(firstChar)
+		if update.Message.Text >= "а" && update.Message.Text <= "я" {
+			fmt.Println(str)
+			Arr = findMatch(Arr, str)
+			stringNewArr := strings.Join(Arr, ", ")
+			stringNewArr = stringNewArr[:3500]
+			msg.Text = stringNewArr + "\n\nТелеграм позволят показывать 4096 символов в сообщении, продолжайте выборку\nЕсли вы хотите ограничить колличество букв в слове, то введите цифру."
+			bot.Send(msg)
+		}
+
+		if firstChar >= 'a' && firstChar <= 'z' {
+			msg.Text = "Вы ввели букву " + update.Message.Text + ", я пока маленький и не понимаю Ангийский язык, но я учусь, попробуйте ввести русскую букву"
+		}
+
 		switch update.Message.Text {
 		case "/start":
 			msg.Text = "Привет, добро пожаловать в словестный бот!\nОтправьте боту букву и он выдаст вам список слов с этой бувой, если вы хотите ограничить колличество букв в слове, то введите цифру.\nДля того чтобы начать с начала выберете команду *reset*."
@@ -90,14 +114,8 @@ func main() {
 			msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
 		case "/reset":
 			msg.Text = "Вы выбрали команду *reset* начинайте выбор слов с начала."
-			// Reset()  // ресетим слова в боте
+			Arr = Reset() // ресетим слова в боте, тупо перезаписываем оригинальный массив
 			msg.ParseMode = "markdown"
-		default:
-			if firstChar >= 'a' && firstChar <= 'z' {
-				msg.Text = "Вы ввели букву " + update.Message.Text + ", я пока маленький и не понимаю Ангийский язык, но я учусь, попробуйте ввести русскую букву"
-			} else if firstChar >= 'а' && firstChar <= 'я' {
-				// Calculate()
-			}
 		}
 
 		// и отправляем его обратно
