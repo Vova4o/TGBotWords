@@ -4,14 +4,22 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-var numericKeyboard = tgbotapi.NewInlineKeyboardMarkup(
+var numericKeyboardFirst = tgbotapi.NewInlineKeyboardMarkup(
 	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("С начала", "start"),
-		tgbotapi.NewInlineKeyboardButtonData("Буква", "letter"),
+		tgbotapi.NewInlineKeyboardButtonData("Вперед", "forward"),
 	),
+)
+
+var numericKeyboardMidl = tgbotapi.NewInlineKeyboardMarkup(
 	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("Цифра", "number"),
-		tgbotapi.NewInlineKeyboardButtonData("Ввести букву", "enterLetter"),
+		tgbotapi.NewInlineKeyboardButtonData("Назад", "back"),
+		tgbotapi.NewInlineKeyboardButtonData("Вперед", "forward"),
+	),
+)
+
+var numericKeyboardLast = tgbotapi.NewInlineKeyboardMarkup(
+	tgbotapi.NewInlineKeyboardRow(
+		tgbotapi.NewInlineKeyboardButtonData("Назад", "back"),
 	),
 )
 
