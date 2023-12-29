@@ -12,6 +12,10 @@ var numericKeyboardFirst = tgbotapi.NewInlineKeyboardMarkup(
 
 var numericKeyboardMidl = tgbotapi.NewInlineKeyboardMarkup(
 	tgbotapi.NewInlineKeyboardRow(
+		tgbotapi.NewInlineKeyboardButtonData("В начало", "fpage"),
+		tgbotapi.NewInlineKeyboardButtonData("В конец", "lpage"),
+	),
+	tgbotapi.NewInlineKeyboardRow(
 		tgbotapi.NewInlineKeyboardButtonData("Назад", "back"),
 		tgbotapi.NewInlineKeyboardButtonData("Вперед", "forward"),
 	),

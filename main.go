@@ -12,6 +12,7 @@ import (
 )
 
 var Arr []string
+var StringNewArr string
 
 func init() {
 	envErr := godotenv.Load(".env")
@@ -32,7 +33,7 @@ func main() {
 		panic(err)
 	}
 
-	bot.Debug = false
+	bot.Debug = true
 
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
@@ -45,28 +46,51 @@ func main() {
 	for update := range updates {
 
 		fmt.Println(len(Arr))
-		// if update.CallbackQuery != nil {
-		// 	callback := update.CallbackQuery
-		// 	callbackData := callback.Data
+		if update.CallbackQuery != nil {
+			callback := update.CallbackQuery
+			callbackData := callback.Data
 
-		// 	switch callbackData {
-		// 	case "start":
-		// 		// if callbackData != "" {
-		// 		msg := tgbotapi.NewMessage(callback.Message.Chat.ID, callback.Data)
-		// 		msg.Text = "Вы выбрали " + fmt.Sprintf("*%v*", callback.Data)
-		// 		// делаем шрифт жирным
-		// 		msg.ParseMode = "markdown"
-		// 		bot.Send(msg)
-		// 	case "letter":
-		// 		msg := tgbotapi.NewMessage(callback.Message.Chat.ID, callback.Data)
-		// 		msg.Text = "Привет! вот вы добрались до букв"
-		// 		bot.Send(msg)
-		// 	case "number":
-		// 		msg := tgbotapi.NewMessage(callback.Message.Chat.ID, callback.Data)
-		// 		msg.Text = "Привет! вот вы добрались до цифр"
-		// 		bot.Send(msg)
-		// 	}
-		// }
+			switch callbackData {
+			case "fpage":
+				msg := tgbotapi.NewMessage(callback.Message.Chat.ID, callback.Data)
+				if len(Arr) < 100 {
+					msg.Text = strings.Join(Arr, ", ")
+				} else {
+					msg.Text = strings.Join(Arr[:100], ", ")
+				}
+				msg.ReplyMarkup = numericKeyboardMidl
+				bot.Send(msg)
+			case "lpage":
+				msg := tgbotapi.NewMessage(callback.Message.Chat.ID, callback.Data)
+				if len(Arr) < 100 {
+					msg.Text = strings.Join(Arr, ", ")
+				} else {
+					msg.Text = strings.Join(Arr[len(Arr)-100:], ", ")
+				}
+				msg.ReplyMarkup = numericKeyboardLast
+				bot.Send(msg)
+			case "back":
+				msg := tgbotapi.NewMessage(callback.Message.Chat.ID, callback.Data)
+				// need to fix it
+				if len(Arr) < 100 {
+					msg.Text = strings.Join(Arr, ", ")
+				} else {
+					msg.Text = strings.Join(Arr[len(Arr)-100:], ", ")
+				}
+				msg.ReplyMarkup = numericKeyboardMidl
+				bot.Send(msg)
+			case "forward":
+				msg := tgbotapi.NewMessage(callback.Message.Chat.ID, callback.Data)
+				// need to fix it
+				if len(Arr) < 100 {
+					msg.Text = strings.Join(Arr, ", ")
+				} else {
+					msg.Text = strings.Join(Arr[:100], ", ")
+				}
+				msg.ReplyMarkup = numericKeyboardMidl
+				bot.Send(msg)
+			}
+		}
 
 		// Проверяем, что сообщение не пустое
 		if update.Message == nil { // ignore non-Message updates
@@ -85,12 +109,15 @@ func main() {
 			log.Print(err)
 		} else {
 			Arr = shrinkByLen(Arr, numOfLetters)
-			stringNewArr := strings.Join(Arr, ", ")
-			if len(stringNewArr) > 3000 {
-				stringNewArr = stringNewArr[:3000]
+			// StringNewArr = strings.Join(Arr, ", ")
+			var StringArr string
+			if len(Arr) < 100 {
+				StringArr = strings.Join(Arr, ", ")
+			} else {
+				StringArr = strings.Join(Arr[:100], ", ")
 			}
-			msg.Text = stringNewArr + "\n\nЕсли вы хотите ограничить колличество букв в слове, то введите цифру."
-			// bot.Send(msg)
+			msg.Text = StringArr + "\n\nЕсли вы хотите ограничить колличество букв в слове, то введите цифру."
+			msg.ReplyMarkup = numericKeyboardMidl
 		}
 
 		// путем сложных манипуляций с текстом рунами и еще чем попало
@@ -104,12 +131,15 @@ func main() {
 		if firstChar >= aByte && firstChar <= zByte {
 			fmt.Println(str)
 			Arr = findMatch(Arr, str)
-			stringNewArr := strings.Join(Arr, ", ")
-			if len(stringNewArr) > 3000 {
-				stringNewArr = stringNewArr[:3000]
+			// StringNewArr = strings.Join(Arr, ", ")
+			var StringArr string
+			if len(Arr) < 100 {
+				StringArr = strings.Join(Arr, ", ")
+			} else {
+				StringArr = strings.Join(Arr[:100], ", ")
 			}
-			msg.Text = stringNewArr + "\n\nТелеграм позволят показывать 4096 символов в сообщении, продолжайте выборку\nЕсли вы хотите ограничить колличество букв в слове, то введите цифру."
-			// bot.Send(msg)
+			msg.Text = StringArr + "\n\nТелеграм позволят показывать 4096 символов в сообщении, продолжайте выборку\nЕсли вы хотите ограничить колличество букв в слове, то введите цифру."
+			msg.ReplyMarkup = numericKeyboardMidl
 		}
 
 		if firstChar >= byte('a') && firstChar <= byte('z') {
