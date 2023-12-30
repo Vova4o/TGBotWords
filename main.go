@@ -14,8 +14,21 @@ import (
 var Arr []string
 var StringNewArr string
 
+// const (
+//	offset = 100
+// )
+
+// добавить структуру для хранения данных о пользователе
+// инициализировать мапу для каждого пользователя со свим массивом слов
+// var userInfo struct {
+// 	words  []string
+// 	off int
+// }
+
+// инициализация мапы для каждого пользователя со свим массивом слов
 var m = make(map[int64][]string)
 
+// загружаем переменные из файла .env
 func init() {
 	envErr := godotenv.Load(".env")
 	if envErr != nil {
@@ -24,31 +37,41 @@ func init() {
 	}
 }
 
+// читаем файл и возвращаем массив слов
 func init() {
 	Arr, _ = readTextFile()
 }
 
 func main() {
 
+	// подключаемся к боту
 	bot, err := tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_APITOKEN"))
 	if err != nil {
 		panic(err)
 	}
 
-	bot.Debug = true
+	bot.Debug = false
 
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
+	// создаем условия обновлений
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
 
+	// подключаемся к каналу обновлений
 	updates := bot.GetUpdatesChan(u)
+
 	// Получаем обновления из канала updates
 	// и обрабатываем каждое по очереди
 	for update := range updates {
 
+		// обьявляем переменную для хранения id пользователя
 		var userIdInside int64
 
+		// проводим проверку на то, от кого пришло сообщение
+		// если от пользователя, то берем его id
+		// если от callback кнопок, то берем id пользователя из callback
+		// и добавляем его в переменную
 		if update.Message != nil {
 			userIdInside = update.Message.From.ID
 		} else if update.CallbackQuery != nil {
